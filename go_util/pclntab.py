@@ -241,7 +241,6 @@ class pclntab_struct_GO_12(pclntab_struct_abs):
 class pclntab_struct_GO_118(pclntab_struct_abs):
     # refer : src/debug/gosym/pclntab.go
     MAGIC = 0xFFFFFFF0
-    # MAGIC = 0xFFFFFFFB
     GOVER = 'Go1.18'
 
     def iterator_function(self):
@@ -263,16 +262,16 @@ class pclntab_struct_GO_118(pclntab_struct_abs):
 
         nameBase = self.pclntab + nameOff
         funcBase = self.pclntab + funcOff
-        funcCnt = idc.get_wide_dword(self.pclntab + 8)
 
         for i in range(funcCnt):
-            pc = funcBase + self.ptrsize
-            itemoff = funcBase + (i * 2) * self.ptrsize
+            pc = funcBase + 4
+            itemoff = funcBase + (i * 2) * 4
             fdr = idc.get_wide_dword(itemoff)
             off = idc.get_wide_dword(itemoff + 4)
             fin = idc.get_wide_dword(pc + off)
-            # print(hex(nameBase+fin), hex(fdr + funcInit))
             funcaddr = fdr + funcInit
             namestr = (idc.get_strlit_contents(nameBase+fin))
+            # if namestr == None:
+            #     continue
             yield(i, funcaddr, namestr)
         pass

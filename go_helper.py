@@ -27,8 +27,7 @@ def set_function_name(addr, funcname):
         idc.add_func(addr)
     elif not origin_name.startswith("sub_"):
         return
-    print("function-name ", hex(addr), funcname)
-    idc.set_name(addr, funcname)
+    idc.set_name(addr, valid_name(funcname))
 
 def set_var_name(addr, typename):
     idc.set_name(addr, typename)
@@ -38,7 +37,7 @@ def try_recovery_function_names():
     if not ok:
         return
     for i,funcaddr, funcname in clzhandle.iterator_function():
-        set_function_name(funcaddr, valid_name(funcname).decode())
+        set_function_name(funcaddr, funcname.decode())
     for type_addr in clzhandle.iterator_type_struct():
         ok, addr, typestr = clzhandle.try_parse_type_struct(type_addr)
         if ok:
