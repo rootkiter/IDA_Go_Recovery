@@ -153,20 +153,15 @@ class pclntab_struct_abs:
                     m_nstr = idc.get_strlit_contents(m_name_addr + 2)
                 else:
                     m_nstr = idc.get_strlit_contents(m_name_addr + 3)
+                m_offset = idc.get_wide_dword(m_offwhat) >> 1
                 ida_utils.MakeUptr(m_name, (m_nstr.decode()))
                 ida_utils.MakeUptr(m_type, "")
-                ida_utils.MakeUptr(m_offwhat, "")
+                ida_utils.MakeUptr(m_offwhat, "%s" % (hex(m_offset)))
 
         return True, addr, typestr
-        # print(hex(kind_off), leadtype, basetype)
-
 
     def iterator_type_struct(self):
         itered = {}
-        # for addr in self._iterator_type_by_keymethods():
-        #     if addr not in itered:
-        #         itered[addr] = True
-        #         yield addr
         for addr in self._iterator_type_by_itablink():
             if addr not in itered:
                 itered[addr] = True
@@ -182,23 +177,6 @@ class pclntab_struct_abs:
                     ok, _, _ = self.try_parse_type_struct(ea)
                     if ok:
                         yield ea
-
-    def _iterator_type_by_keymethods(self):
-        for funcname in keyfunctions:
-            funcaddr = idc.get_name_ea_simple(funcname)
-            if funcaddr == idc.BADADDR:
-                continue
-            for xref in idautils.CodeRefsTo(funcaddr,1):
-                for addr in range(xref-0x40, xref+4):
-                    reflist = list(idautils.DataRefsFrom(addr))
-                    if len(reflist)<=0:
-                        continue
-                    maybe_type_struct = reflist[::-1][0]
-                    ok, _, _ = self.try_parse_type_struct(maybe_type_struct)
-                    print(hex(addr), hex(maybe_type_struct))
-                    if not ok:
-                        continue
-                    yield maybe_type_struct
 
     def _iterator_type_by_itablink(self):
         itab_size = int((self.itablink_end - self.itablink)/ self.ptrsize)
