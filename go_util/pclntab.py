@@ -275,3 +275,9 @@ class pclntab_struct_GO_118(pclntab_struct_abs):
             #     continue
             yield(i, funcaddr, namestr)
         pass
+
+class pclntab_struct_GO_120(pclntab_struct_GO_118):
+    # refer: https://github.com/golang/go/blob/9c5cae08928a885616f54d8df50a43713b95db7a/src/debug/gosym/pclntab.go#L255
+    # go1.20 is the same as go1.18
+    MAGIC = 0xFFFFFFF1
+    GOVER = 'Go1.20'
