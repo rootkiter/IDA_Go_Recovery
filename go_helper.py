@@ -32,17 +32,44 @@ def set_function_name(addr, funcname):
 def set_var_name(addr, typename):
     idc.set_name(addr, typename)
 
-def try_recovery_function_names():
-    ok, clzhandle = go_util.try_guess_go_functions()
-    if not ok:
-        return
+def recovery_function_by_clzhandle(clzhandle):
     for i,funcaddr, funcname in clzhandle.iterator_function():
+        try:
+            fname = funcname.decode()
+        except Exception as e:
+            continue
         set_function_name(funcaddr, funcname.decode())
     for type_addr in clzhandle.iterator_type_struct():
         ok, addr, typestr = clzhandle.try_parse_type_struct(type_addr)
         if ok:
             set_var_name(addr, "_type_%s" % typestr)
     print("go version ", clzhandle.go_version())
+
+def GoRecovery(ver):
+    ok, clz = go_util.get_recovery_handle(ver)
+    if not ok:
+        errmsg = clz
+        print(errmsg)
+        return False
+    recovery_function_by_clzhandle(clz)
+    return True
+
+def try_recovery_function_names():
+    ok, versions, clzhandle = go_util.try_guess_go_functions()
+    if not ok:
+        gopclntab_addr, magic = clzhandle
+        print("Magic number matching failed [", hex(gopclntab_addr), ":", hex(magic),"]")
+        print("You can manually specify a version number, for example:")
+
+        for ver in versions:
+            print("   GoRecovery(\"%s\")" % (ver))
+
+        # print("   GoRecovery(\"1.20\")")
+        # print("   GoRecovery(\"1.18\")")
+        # print("   GoRecovery(\"1.16\")")
+        # print("   GoRecovery(\"1.2\")")
+        return
+    recovery_function_by_clzhandle(clzhandle)
 
 
 '''

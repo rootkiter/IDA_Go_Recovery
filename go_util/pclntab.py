@@ -51,6 +51,7 @@ kindmap = {
 class pclntab_struct_abs:
     MAGIC=0x00
     GOVER="0"
+    LEVEL=0x0
     def __init__(self, pclntab, itablink):
         self.pclntab      = pclntab.start_ea
         self.itablink     = itablink.start_ea
@@ -71,9 +72,10 @@ class pclntab_struct_abs:
         return fmt
 
     def matched_go_version(self):
-        if idc.get_wide_dword(self.pclntab) == self.MAGIC:
-            return True
-        return False
+        magic = idc.get_wide_dword(self.pclntab)
+        if magic == self.MAGIC:
+            return True, magic
+        return False, magic
 
     def go_version(self):
         return self.GOVER
@@ -198,6 +200,7 @@ class pclntab_struct_GO_116(pclntab_struct_abs):
     # src/debug/gosym/pclntab.go
     MAGIC = 0xFFFFFFFA
     GOVER = 'Go1.16'
+    LEVEL=0x2
 
     def iterator_function(self):
         funcCnt = idc.get_wide_dword(self.pclntab+8)
@@ -224,6 +227,7 @@ class pclntab_struct_GO_12(pclntab_struct_abs):
     # refer : golang.org/s/go12symtab
     MAGIC = 0xFFFFFFFB
     GOVER = 'Go1.2'
+    LEVEL=0x1
 
     def iterator_function(self):
         funcCnt = idc.get_wide_dword(self.pclntab+8)
@@ -242,6 +246,7 @@ class pclntab_struct_GO_118(pclntab_struct_abs):
     # refer : src/debug/gosym/pclntab.go
     MAGIC = 0xFFFFFFF0
     GOVER = 'Go1.18'
+    LEVEL=0x3
 
     def iterator_function(self):
         '''
@@ -281,3 +286,4 @@ class pclntab_struct_GO_120(pclntab_struct_GO_118):
     # go1.20 is the same as go1.18
     MAGIC = 0xFFFFFFF1
     GOVER = 'Go1.20'
+    LEVEL=0x4
