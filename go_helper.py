@@ -63,11 +63,6 @@ def try_recovery_function_names():
 
         for ver in versions:
             print("   GoRecovery(\"%s\")" % (ver))
-
-        # print("   GoRecovery(\"1.20\")")
-        # print("   GoRecovery(\"1.18\")")
-        # print("   GoRecovery(\"1.16\")")
-        # print("   GoRecovery(\"1.2\")")
         return
     recovery_function_by_clzhandle(clzhandle)
 
